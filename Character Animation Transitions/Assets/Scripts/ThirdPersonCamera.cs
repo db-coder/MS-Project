@@ -13,7 +13,7 @@ public class ThirdPersonCamera : MonoBehaviour
         Debug.Log("camera init");
 
 		// initialising references
-		//standardPos = GameObject.Find ("CamPos").transform;
+		standardPos = GameObject.Find ("CamPos").transform;
 
         if (standardPos == null)
         {

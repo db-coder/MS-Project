@@ -119,86 +119,43 @@ public class RagdollHelper : MonoBehaviour {
                     int index = 0;
                     float min_error = int.MaxValue;
 
-                    if (anim.GetBoneTransform(HumanBodyBones.Hips).forward.y > 0) //hip hips forward vector pointing upwards, initiate the get up from back animation
+                    for (int j = 0; j < pose_script.animHips.Length; j ++)
                     {
-                        for (int j = 0; j < pose_script.animHips.Length; j += 2)
+                        GameObject hipsClone = pose_script.animHips[j];
+
+                        hipsClone.transform.position = anim.GetBoneTransform(HumanBodyBones.Hips).position;
+                        Vector3 ragdollComp = Vector3.ProjectOnPlane(anim.GetBoneTransform(HumanBodyBones.Hips).up, Vector3.up);
+                        Vector3 animComp = Vector3.ProjectOnPlane(hipsClone.transform.up, Vector3.up);
+
+                        hipsClone.transform.Rotate(Vector3.up, Vector3.SignedAngle(animComp, ragdollComp, Vector3.up));
+
+                        Transform[] cloneTransforms = hipsClone.GetComponentsInChildren<Transform>();
+                        count = 0;
+                        Quaternion[] animBones = new Quaternion[80];
+                        foreach (Transform child in cloneTransforms)
                         {
-                            GameObject hipsClone = Instantiate(pose_script.animHips[j]);
-
-                            hipsClone.transform.Translate(anim.GetBoneTransform(HumanBodyBones.Hips).position - hipsClone.transform.position);
-                            Vector3 ragdollComp = Vector3.ProjectOnPlane(anim.GetBoneTransform(HumanBodyBones.Hips).up, Vector3.up);
-                            Vector3 animComp = Vector3.ProjectOnPlane(hipsClone.transform.up, Vector3.up);
-
-                            hipsClone.transform.Rotate(Vector3.up, Vector3.SignedAngle(animComp, ragdollComp, Vector3.up));
-
-                            Transform[] cloneTransforms = hipsClone.GetComponentsInChildren<Transform>();
-                            count = 0;
-                            Quaternion[] animBones = new Quaternion[80];
-                            foreach (Transform child in cloneTransforms)
+                            if(child != null)
                             {
-                                if(child != null)
-                                {
-                                    //Debug.Log(child.name);
-                                    animBones[count] = child.rotation;
-                                    count++;
-                                }
-                            }
-
-                            Debug.Log("anim bone count " + count);
-
-                            float error = 0;
-                            for (int k = 0; k < count; k++)
-                            {
-                                error += 1 - Mathf.Pow(Quaternion.Dot(bones[k], animBones[k]), 2);        //1 - <q1,q2>^2
-                            }
-                            Debug.Log("error for index " + j + " is " + error);
-                            if (min_error > error)
-                            {
-                                min_error = error;
-                                index = j;
+                                //Debug.Log(child.name);
+                                animBones[count] = child.rotation;
+                                count++;
                             }
                         }
-                    }
-                    else
-                    {
-                        for (int j = 1; j < 6; j += 2)
+
+                        Debug.Log("anim bone count " + count);
+
+                        float error = 0;
+                        for (int k = 0; k < count; k++)
                         {
-                            GameObject hipsClone = Instantiate(pose_script.animHips[j]);
-
-                            hipsClone.transform.Translate(anim.GetBoneTransform(HumanBodyBones.Hips).position-hipsClone.transform.position);
-                            Vector3 ragdollComp = Vector3.ProjectOnPlane(anim.GetBoneTransform(HumanBodyBones.Hips).up, Vector3.up);
-                            Vector3 animComp = Vector3.ProjectOnPlane(hipsClone.transform.up, Vector3.up);
-
-                            hipsClone.transform.Rotate(Vector3.up, Vector3.SignedAngle(animComp, ragdollComp, Vector3.up));
-
-                            Transform[] cloneTransforms = hipsClone.GetComponentsInChildren<Transform>();
-                            count = 0;
-                            Quaternion[] animBones = new Quaternion[80];
-                            foreach (Transform child in cloneTransforms)
-                            {
-                                if (child != null)
-                                {
-                                    //Debug.Log(child.name);
-                                    animBones[count] = child.rotation;
-                                    count++;
-                                }
-                            }
-
-                            Debug.Log("anim bone count " + count);
-
-                            float error = 0;
-                            for (int k = 0; k < count; k++)
-                            {
-                                error += 1 - Mathf.Pow(Quaternion.Dot(bones[k], animBones[k]), 2);        //1 - <q1,q2>^2
-                            }
-                            Debug.Log("error for index " + j + " is " + error);
-                            if (min_error > error)
-                            {
-                                min_error = error;
-                                index = j;
-                            }
+                            error += 1 - Mathf.Pow(Quaternion.Dot(bones[k], animBones[k]), 2);        //1 - <q1,q2>^2
                         }
-                    }
+                        Debug.Log("error for index " + j + " is " + error);
+                        if (min_error > error)
+                        {
+                            min_error = error;
+                            index = j;
+                        }
+                     }
 
                     //Quaternion[][] animBones = new Quaternion[6][];
                     //for (int j = 0; j < 6; ++j)
@@ -349,7 +306,13 @@ public class RagdollHelper : MonoBehaviour {
 		//For each of the components in the array, treat the component as a Rigidbody and set its isKinematic property
 		foreach (Component c in components)
 		{
-			(c as Rigidbody).isKinematic=newValue;
+            Debug.Log("rb " + c.gameObject.name);
+            if (c.gameObject.GetInstanceID() != GetInstanceID())
+            {
+                Debug.Log("rb " + c.gameObject.name + " done");
+                (c as Rigidbody).isKinematic = false;
+            }
+            (c as Rigidbody).isKinematic=newValue;
 		}
 	}
 	

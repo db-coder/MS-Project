@@ -17,8 +17,13 @@ public class RagdollScript : MonoBehaviour {
 		//For each of the components in the array, treat the component as a Rigidbody and set its isKinematic property
 		foreach (Rigidbody rb in bodies)
 		{
+            Debug.Log("rb " + rb.gameObject.name);
+            if (rb.gameObject.GetInstanceID() != GetInstanceID())
+                rb.isKinematic = false;
 			rb.isKinematic=newValue;
 		}
+        //Rigidbody rb1 = this.gameObject.GetComponent<Rigidbody>();
+        //rb1.isKinematic = false;
 	}
 	// Use this for initialization
 	void Start () {

@@ -29,13 +29,15 @@ public class PoserScript : MonoBehaviour {
 
     private Animator anim;
 
-    private Animator animChar;
+    //private Animator animChar;
 
     private int currState = 0;
 
-    public GameObject character;
+    int counter = 0;
 
-    RagdollHelper ragdollScript;
+    //public GameObject character;
+
+    //RagdollHelper ragdollScript;
 
 
     private void Awake()
@@ -91,8 +93,10 @@ public class PoserScript : MonoBehaviour {
         }
 
 
-        if (!animStateInfo.IsName(animStates[currState]))
+        if (!animStateInfo.IsName(animStates[currState]) && counter == 0)
         {
+            if (currState == 1)
+                counter = 1;
             Debug.Log("Playing " + animStates[currState] + " for pose capture");
             anim.Play(animStates[currState]);
 
@@ -109,9 +113,15 @@ public class PoserScript : MonoBehaviour {
             //    anim.GetBoneTransform(HumanBodyBones.Hips).Rotate(Vector3.up, Vector3.SignedAngle(animComp, ragdollComp, Vector3.up));
             //}
 
-            int i = -1;
-
-            animHips[currState] = character;
+            //int i = -1;
+            if (currState == 0 && counter <= 10)
+            {
+                counter++;
+                return;
+            }
+            counter = 0;
+            GameObject hipsClone = Instantiate(this.transform.Find("mixamorig:Hips").gameObject);
+            animHips[currState] = hipsClone;
 
             //foreach (var b in (HumanBodyBones[])System.Enum.GetValues(typeof(HumanBodyBones)))
             //{
