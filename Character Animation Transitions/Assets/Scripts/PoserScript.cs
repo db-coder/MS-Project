@@ -25,6 +25,7 @@ public class PoserScript : MonoBehaviour {
     public Quaternion[] bones_4;
     public Quaternion[] bones_5;
 
+    public GameObject[] animHips;
 
     private Animator anim;
 
@@ -64,8 +65,10 @@ public class PoserScript : MonoBehaviour {
         bones_4 = new Quaternion[bone_count];
         bones_5 = new Quaternion[bone_count];
 
-        ragdollScript = character.GetComponent<RagdollHelper>();
-        animChar = character.GetComponent<Animator>();
+        animHips = new GameObject[6];
+
+        //ragdollScript = character.GetComponent<RagdollHelper>();
+        //animChar = character.GetComponent<Animator>();
     }
 
     void Start () {
@@ -96,75 +99,82 @@ public class PoserScript : MonoBehaviour {
         }
         else
         {
-            if(ragdollScript.state == RagdollHelper.RagdollState.ragdolled)
-            {
-                anim.GetBoneTransform(HumanBodyBones.Hips).Translate(animChar.GetBoneTransform(HumanBodyBones.Hips).position);
-            }
+            //if(ragdollScript.state == RagdollHelper.RagdollState.ragdolled)
+            //{
+            //    Debug.Log("translate done");
+            //    anim.GetBoneTransform(HumanBodyBones.Hips).Translate(animChar.GetBoneTransform(HumanBodyBones.Hips).position);
+            //    Vector3 ragdollComp = Vector3.ProjectOnPlane(anim.GetBoneTransform(HumanBodyBones.Hips).up, Vector3.up);
+            //    Vector3 animComp = Vector3.ProjectOnPlane(animChar.GetBoneTransform(HumanBodyBones.Hips).up, Vector3.up);
+
+            //    anim.GetBoneTransform(HumanBodyBones.Hips).Rotate(Vector3.up, Vector3.SignedAngle(animComp, ragdollComp, Vector3.up));
+            //}
 
             int i = -1;
 
-            foreach (var b in (HumanBodyBones[])System.Enum.GetValues(typeof(HumanBodyBones)))
-            {
-                ++i;
+            animHips[currState] = character;
 
-                if (b == HumanBodyBones.LastBone)
-                    break;
+            //foreach (var b in (HumanBodyBones[])System.Enum.GetValues(typeof(HumanBodyBones)))
+            //{
+            //    ++i;
 
-                var t = anim.GetBoneTransform(b);
+            //    if (b == HumanBodyBones.LastBone)
+            //        break;
 
-                if (t != null)
-                {
-                    bones[currState][i] = t.rotation;
+            //    var t = anim.GetBoneTransform(b);
 
-                }
-            }
+            //    if (t != null)
+            //    {
+            //        bones[currState][i] = t.rotation;
+
+            //    }
+            //}
 
             Debug.Log("Capture complete for state " + animStates[currState]);
 
 
             //Inspector limitation workaround to see bone rotations for first two states
-            if(currState == 0)
-            {
-                for (int j = 0; j < bones[currState].Length; ++j)
-                {
-                    bones_0[j] = bones[currState][j];
-                }
-            }
-            else if (currState == 1)
-            {
-                for (int j = 0; j < bones[currState].Length; ++j)
-                {
-                    bones_1[j] = bones[currState][j];
-                }                
-            }
-            else if (currState == 2)
-            {
-                for (int j = 0; j < bones[currState].Length; ++j)
-                {
-                    bones_2[j] = bones[currState][j];
-                }
-            }
-            else if (currState == 3)
-            {
-                for (int j = 0; j < bones[currState].Length; ++j)
-                {
-                    bones_3[j] = bones[currState][j];
-                }
-            }
-            else if (currState == 4)
-            {
-                for (int j = 0; j < bones[currState].Length; ++j)
-                {
-                    bones_4[j] = bones[currState][j];
-                }
-            }
-            else if (currState == 5)
-            {
-                for (int j = 0; j < bones[currState].Length; ++j)
-                {
-                    bones_5[j] = bones[currState][j];
-                }
-            }
+            //if(currState == 0)
+            //{
+            //    for (int j = 0; j < bones[currState].Length; ++j)
+            //    {
+            //        bones_0[j] = bones[currState][j];
+            //    }
+            //}
+            //else if (currState == 1)
+            //{
+            //    for (int j = 0; j < bones[currState].Length; ++j)
+            //    {
+            //        bones_1[j] = bones[currState][j];
+            //    }
+            //}
+            //else if (currState == 2)
+            //{
+            //    for (int j = 0; j < bones[currState].Length; ++j)
+            //    {
+            //        bones_2[j] = bones[currState][j];
+            //    }
+            //}
+            //else if (currState == 3)
+            //{
+            //    for (int j = 0; j < bones[currState].Length; ++j)
+            //    {
+            //        bones_3[j] = bones[currState][j];
+            //    }
+            //}
+            //else if (currState == 4)
+            //{
+            //    for (int j = 0; j < bones[currState].Length; ++j)
+            //    {
+            //        bones_4[j] = bones[currState][j];
+            //    }
+            //}
+            //else if (currState == 5)
+            //{
+            //    for (int j = 0; j < bones[currState].Length; ++j)
+            //    {
+            //        bones_5[j] = bones[currState][j];
+            //    }
+            //}
 
             ++currState;
 

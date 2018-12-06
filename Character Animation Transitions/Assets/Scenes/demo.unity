@@ -6399,11 +6399,11 @@ Prefab:
     - target: {fileID: 13700000, guid: 87425fb6c5daf3548b8fa8beafe5be8f, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 5dc9d6e32c3a4854aa547ee03a76be6c, type: 2}
+      objectReference: {fileID: 2100000, guid: 41032243d922e7d4ea730df27aaae7e8, type: 2}
     - target: {fileID: 13700002, guid: 87425fb6c5daf3548b8fa8beafe5be8f, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 5dc9d6e32c3a4854aa547ee03a76be6c, type: 2}
+      objectReference: {fileID: 2100000, guid: bae187a3c6d12a741993f120d9c6cb4c, type: 2}
     - target: {fileID: 13700004, guid: 87425fb6c5daf3548b8fa8beafe5be8f, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
@@ -13572,7 +13572,8 @@ MonoBehaviour:
   bones_3: []
   bones_4: []
   bones_5: []
-  character: {fileID: 1607030279}
+  animHips: []
+  character: {fileID: 644056349}
 --- !u!114 &1392164826
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14786,6 +14787,36 @@ Prefab:
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 57e6787794c864677921523e8f571933, type: 2}
   m_IsPrefabAsset: 0
+--- !u!1 &1512860636
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 1645565451822218, guid: 9e713137660c14703a1bb2152023be46,
+    type: 2}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1512860637}
+  m_Layer: 11
+  m_Name: CamPos
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &1512860637
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 4800100166316008, guid: 9e713137660c14703a1bb2152023be46,
+    type: 2}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1512860636}
+  m_LocalRotation: {x: 0.17618677, y: -0.016508793, z: -0.016966138, w: 0.9840721}
+  m_LocalPosition: {x: 0, y: 6.59, z: -15.900003}
+  m_LocalScale: {x: 2.013859, y: 10.02766, z: 10.0073395}
+  m_Children: []
+  m_Father: {fileID: 1607030287}
+  m_RootOrder: 9
+  m_LocalEulerAnglesHint: {x: 20.255001, y: -2.3500001, z: -2.3950002}
 --- !u!1001 &1516081506
 Prefab:
   m_ObjectHideFlags: 0
@@ -16555,6 +16586,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6a01b154fe4fff4897b2e95cff90d42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!4 &1607030287 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 400012, guid: 87425fb6c5daf3548b8fa8beafe5be8f,
+    type: 3}
+  m_PrefabInternal: {fileID: 1607030278}
 --- !u!111 &1607030288
 Animation:
   m_ObjectHideFlags: 0
@@ -16577,6 +16613,19 @@ Animation:
   m_PlayAutomatically: 0
   m_AnimatePhysics: 0
   m_CullingType: 0
+--- !u!114 &1607030289
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1607030279}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee943175f471c4ba7873f072774ded3d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  smooth: 3
+  standardPos: {fileID: 1512860637}
 --- !u!1001 &1613676198
 Prefab:
   m_ObjectHideFlags: 0

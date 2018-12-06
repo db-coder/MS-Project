@@ -65,39 +65,45 @@ public class RagdollHelper : MonoBehaviour {
 					ragdolledHipPosition=anim.GetBoneTransform(HumanBodyBones.Hips).position;
 
 
-                    int i = -1;
-                    int bone_count = ((HumanBodyBones[])System.Enum.GetValues(typeof(HumanBodyBones))).Length;
-                    bone_count -= 1; //Don't count "LastBone"
+                    //int i = -1;
+                    //int bone_count = ((HumanBodyBones[])System.Enum.GetValues(typeof(HumanBodyBones))).Length;
+                    //bone_count -= 1; //Don't count "LastBone"
 
-                    Quaternion[] bones = new Quaternion[bone_count];
+                    Quaternion[] bones = new Quaternion[80];
 
-                    foreach (var b in (HumanBodyBones[])System.Enum.GetValues(typeof(HumanBodyBones)))
+                    //foreach (var b in (HumanBodyBones[])System.Enum.GetValues(typeof(HumanBodyBones)))
+                    //{
+                    //    ++i;
+
+                    //    if (b == HumanBodyBones.LastBone)
+                    //        break;
+
+                    //    var t = anim.GetBoneTransform(b);
+
+                    //    if (t != null)
+                    //    {
+                    //        bones[i] = t.rotation;
+
+                    //    }
+                    //}
+
+                    //Debug.Log("bone count " + bone_count);
+                    Transform[] transformsRagdoll = anim.GetComponentsInChildren<Transform>();
+                    //Vector3 average = Vector3.zero;
+                    int count = 0;
+                    foreach (Transform child in transformsRagdoll)
                     {
-                        ++i;
-
-                        if (b == HumanBodyBones.LastBone)
-                            break;
-
-                        var t = anim.GetBoneTransform(b);
-
-                        if (t != null)
+                        if (!child.name.StartsWith("mixamorig"))
+                            continue;
+                        if (child != null)
                         {
-                            bones[i] = t.rotation;
-
+                            bones[count] = child.rotation;
+                            count++;
                         }
                     }
-
-                    //Transform[] transformsRagdoll = anim.GetComponentsInChildren<Transform>();
-                    //Vector3 average = Vector3.zero;
-                    //int count = 0;
-                    //foreach(Transform child in transformsRagdoll)
-                    //{
-                    //    average += child.position;
-                    //    count++;
-                    //}
                     //average /= count;
-                    //Debug.Log("ragdoll joint " + count);
-                    
+                    Debug.Log("ragdoll joint " + count);
+
                     //Initiate the get up animation
                     if (anim.GetBoneTransform(HumanBodyBones.Hips).forward.y>0) //hip hips forward vector pointing upwards, initiate the get up from back animation
 					{
@@ -111,32 +117,42 @@ public class RagdollHelper : MonoBehaviour {
                     //Anim.a
                     //float minAvg = int.MaxValue;
                     int index = 0;
-
-                    Quaternion[][] animBones = new Quaternion[6][];
-                    for (int j = 0; j < 6; ++j)
-                    {
-                        animBones[j] = new Quaternion[bone_count];
-                    }
-
-                    animBones[0] = pose_script.bones_0;
-                    animBones[1] = pose_script.bones_1;
-                    animBones[2] = pose_script.bones_2;
-                    animBones[3] = pose_script.bones_3;
-                    animBones[4] = pose_script.bones_4;
-                    animBones[5] = pose_script.bones_5;
-                    Debug.Log("bone count: " + bone_count);
                     float min_error = int.MaxValue;
+
                     if (anim.GetBoneTransform(HumanBodyBones.Hips).forward.y > 0) //hip hips forward vector pointing upwards, initiate the get up from back animation
                     {
-                        for(int j = 0; j < 6; j += 2)
+                        for (int j = 0; j < pose_script.animHips.Length; j += 2)
                         {
-                            float error = 0;
-                            for (int k = 0; k < bone_count; k++)
+                            GameObject hipsClone = Instantiate(pose_script.animHips[j]);
+
+                            hipsClone.transform.Translate(anim.GetBoneTransform(HumanBodyBones.Hips).position - hipsClone.transform.position);
+                            Vector3 ragdollComp = Vector3.ProjectOnPlane(anim.GetBoneTransform(HumanBodyBones.Hips).up, Vector3.up);
+                            Vector3 animComp = Vector3.ProjectOnPlane(hipsClone.transform.up, Vector3.up);
+
+                            hipsClone.transform.Rotate(Vector3.up, Vector3.SignedAngle(animComp, ragdollComp, Vector3.up));
+
+                            Transform[] cloneTransforms = hipsClone.GetComponentsInChildren<Transform>();
+                            count = 0;
+                            Quaternion[] animBones = new Quaternion[80];
+                            foreach (Transform child in cloneTransforms)
                             {
-                                error += 1 - Mathf.Pow(Quaternion.Dot(bones[k], animBones[j][k]),2);        //1 - <q1,q2>^2
+                                if(child != null)
+                                {
+                                    //Debug.Log(child.name);
+                                    animBones[count] = child.rotation;
+                                    count++;
+                                }
+                            }
+
+                            Debug.Log("anim bone count " + count);
+
+                            float error = 0;
+                            for (int k = 0; k < count; k++)
+                            {
+                                error += 1 - Mathf.Pow(Quaternion.Dot(bones[k], animBones[k]), 2);        //1 - <q1,q2>^2
                             }
                             Debug.Log("error for index " + j + " is " + error);
-                            if(min_error > error)
+                            if (min_error > error)
                             {
                                 min_error = error;
                                 index = j;
@@ -147,11 +163,35 @@ public class RagdollHelper : MonoBehaviour {
                     {
                         for (int j = 1; j < 6; j += 2)
                         {
-                            float error = 0;
-                            for (int k = 0; k < bone_count; k++)
+                            GameObject hipsClone = Instantiate(pose_script.animHips[j]);
+
+                            hipsClone.transform.Translate(anim.GetBoneTransform(HumanBodyBones.Hips).position-hipsClone.transform.position);
+                            Vector3 ragdollComp = Vector3.ProjectOnPlane(anim.GetBoneTransform(HumanBodyBones.Hips).up, Vector3.up);
+                            Vector3 animComp = Vector3.ProjectOnPlane(hipsClone.transform.up, Vector3.up);
+
+                            hipsClone.transform.Rotate(Vector3.up, Vector3.SignedAngle(animComp, ragdollComp, Vector3.up));
+
+                            Transform[] cloneTransforms = hipsClone.GetComponentsInChildren<Transform>();
+                            count = 0;
+                            Quaternion[] animBones = new Quaternion[80];
+                            foreach (Transform child in cloneTransforms)
                             {
-                                error += 1 - Mathf.Pow(Quaternion.Dot(bones[k], animBones[j][k]), 2);        //1 - <q1,q2>^2
+                                if (child != null)
+                                {
+                                    //Debug.Log(child.name);
+                                    animBones[count] = child.rotation;
+                                    count++;
+                                }
                             }
+
+                            Debug.Log("anim bone count " + count);
+
+                            float error = 0;
+                            for (int k = 0; k < count; k++)
+                            {
+                                error += 1 - Mathf.Pow(Quaternion.Dot(bones[k], animBones[k]), 2);        //1 - <q1,q2>^2
+                            }
+                            Debug.Log("error for index " + j + " is " + error);
                             if (min_error > error)
                             {
                                 min_error = error;
@@ -159,6 +199,57 @@ public class RagdollHelper : MonoBehaviour {
                             }
                         }
                     }
+
+                    //Quaternion[][] animBones = new Quaternion[6][];
+                    //for (int j = 0; j < 6; ++j)
+                    //{
+                    //    animBones[j] = new Quaternion[bone_count];
+                    //}
+
+                    //animBones[0] = pose_script.bones_0;
+                    //animBones[1] = pose_script.bones_1;
+                    //animBones[2] = pose_script.bones_2;
+                    //animBones[3] = pose_script.bones_3;
+                    //animBones[4] = pose_script.bones_4;
+                    //animBones[5] = pose_script.bones_5;
+                    //Debug.Log("bone count: " + bone_count);
+                    //float min_error = int.MaxValue;
+                    //if (anim.GetBoneTransform(HumanBodyBones.Hips).forward.y > 0) //hip hips forward vector pointing upwards, initiate the get up from back animation
+                    //{
+                    //    for (int j = 0; j < 6; j += 2)
+                    //    {
+                    //        float error = 0;
+                    //        for (int k = 0; k < bone_count; k++)
+                    //        {
+                    //            error += 1 - Mathf.Pow(Quaternion.Dot(bones[k], animBones[j][k]), 2);        //1 - <q1,q2>^2
+                    //        }
+                    //        Debug.Log("error for index " + j + " is " + error);
+                    //        if (min_error > error)
+                    //        {
+                    //            min_error = error;
+                    //            index = j;
+                    //        }
+                    //    }
+                    //}
+                    //else
+                    //{
+                    //    for (int j = 1; j < 6; j += 2)
+                    //    {
+                    //        float error = 0;
+                    //        for (int k = 0; k < bone_count; k++)
+                    //        {
+                    //            error += 1 - Mathf.Pow(Quaternion.Dot(bones[k], animBones[j][k]), 2);        //1 - <q1,q2>^2
+                    //        }
+                    //        Debug.Log("error for index " + j + " is " + error);
+                    //        if (min_error > error)
+                    //        {
+                    //            min_error = error;
+                    //            index = j;
+                    //        }
+                    //    }
+                    //}
+                    Debug.Log("index " + index);
+
 
                     //AnimationClip c = Anim.GetClip("Getting_Up_fight");
                     //AnimationState stateA = Anim["stand_up_from_back_3"];
